@@ -1,0 +1,112 @@
+# This is a sample build configuration for JavaScript.
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: node:8
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - node
+        script: # Modify the commands below to build your repository.
+          - yarn
+          - yarn test
+  branches:
+    deploy: # run tests and deploy to PROD
+      - step:
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - yarn
+            - yarn test:ci
+      - step:
+          name: Deploy to Prod
+          deployment: staging
+          trigger: manual
+          caches:
+            - node
+          script:
+            # Install Google App Engine SDK
+            - curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-155.0.0-linux-x86_64.tar.gz
+            - tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/
+            - /tmp/google-cloud-sdk/install.sh -q
+            - source /tmp/google-cloud-sdk/path.bash.inc
+            # Authenticating with the service account key file
+            - echo $GCLOUD_API_KEYFILE_PROD | base64 --decode --ignore-garbage > ./gcloud-api-key.json
+            - gcloud auth activate-service-account --key-file gcloud-api-key.json
+            # Linking to the Google Cloud project
+            - gcloud config set project $GCLOUD_PROJECT_PROD
+            - sh ./scripts/gae_prod.sh
+            - yarn # reinstall packages in pre-build
+            - yarn build
+            - rm -rf server/build
+            - cp -r build server
+            - cd server
+            - gcloud app deploy
+    master: # run tests and deploy to QAT (STAGING)
+      - step:
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - yarn
+            - yarn test
+      - step:
+          name: Deploy to staging
+          deployment: staging
+          trigger: automatic
+          caches:
+            - node
+          script:
+            # Install Google App Engine SDK
+            - curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-155.0.0-linux-x86_64.tar.gz
+            - tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/
+            - /tmp/google-cloud-sdk/install.sh -q
+            - source /tmp/google-cloud-sdk/path.bash.inc
+            # Authenticating with the service account key file
+            - echo $GCLOUD_API_KEYFILE_STAGING | base64 --decode --ignore-garbage > ./gcloud-api-key.json
+            - gcloud auth activate-service-account --key-file gcloud-api-key.json
+            # Linking to the Google Cloud project
+            - gcloud config set project $GCLOUD_PROJECT_STAGING
+            - yarn # reinstall packages in pre-build
+            - yarn build
+            - rm -rf server/build
+            - cp -r build server
+            - cd server
+            - gcloud app deploy
+    develop: # Run tests and deploy to DEV
+      - step:
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - yarn
+            - yarn test
+      - step:
+          name: Deploying to dev
+          deployment: test
+          trigger: automatic
+          script:
+            # Install Google App Engine SDK
+            - curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-155.0.0-linux-x86_64.tar.gz
+            - tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/
+            - /tmp/google-cloud-sdk/install.sh -q
+            - source /tmp/google-cloud-sdk/path.bash.inc
+            # Authenticating with the service account key file
+            - echo $GCLOUD_API_KEYFILE_DEV | base64 --decode --ignore-garbage > ./gcloud-api-key.json
+            - gcloud auth activate-service-account --key-file gcloud-api-key.json
+            # Linking to the Google Cloud project
+            - gcloud config set project $GCLOUD_PROJECT_DEV
+            - yarn # reinstall packages in pre-build
+            - yarn build
+            - rm -rf server/build
+            - cp -r build server
+            - cd server
+            - gcloud app deploy
+    '**': # matching type/name (i.e. feature/sso-login)
+      - step:
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - yarn
+            - yarn test
