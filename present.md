@@ -12,8 +12,8 @@
 ###### _This presentation's code/slides can be found on [https://github.com/lorderikir/cicd-techtalk](https://github.com/lorderikir/cicd-techtalk)_
 
 <div>
-  	<img class="custom-footer-1" src="https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png" style="bottom: 0; height: 35px" />
-    <img class="custom-footer-1" src="https://www.chef.io/wp-content/uploads/2017/03/google-cloud-platform-1024x246.png" style="bottom: 0; height: 70px"/>
+  	<img class="custom-footer-1" src="https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png" style="bottom: 0; height: 35px; margin-right: 100px" />
+    <img class="custom-footer-1" src="https://i.imgur.com/2QHwIqo.png" style="bottom: 0; height: 35px"/>
 </div>
 
 <span style="font-size: 15px">Slide Deck Version: v1.0.0</span>
@@ -43,7 +43,7 @@
   <img class="custom-footer-1" src="https://cdn-images-1.medium.com/max/1200/0*XWjbrBTJV8a8C2PQ." style="width: 70%" />
 </center>
 
->Integrated CI/CD for Bitbucket Cloud that’s trivial to set up, automating your code from test to production. 
+>Integrated CI/CD for Bitbucket Cloud that's trivial to set up, automating your code from test to production. 
 > _BitBucket Site (Atlassian)_
 
 ---
@@ -114,7 +114,9 @@ _default Pipeline runs for all branches (if not matched)_
 
 _from bitbucket-pipelines.yml_
 ```yaml
+# Use Prebuilt Node 8 Image (Node 8 supports yarn)
 image: node:8
+ 
 
 pipelines:
   default:
@@ -128,5 +130,95 @@ pipelines:
 
 ---
 
+_We can also run workflows on branches_
+
+|      Pattern         |    Targets    |
+|----------------------|---------------|
+| _actual branch name_ | actual branch |
+| feature/*            | all branches with `feature/` such as `feature/sso`, `feature/login`, etc. |
+| * | Matches all branches, tags, or bookmarks. The star symbol (`*`) must be in single quotes. Doesn't match those with slash |
+| ** | Matches all branches including those which have slash |
+
 
 ---
+
+So, simple we can run it with the `branches` mode
+
+```
+# Use Prebuilt Node 8 Image (Node 8 supports yarn)
+image: node:8
+ 
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - node
+        script: 
+          - yarn # <- Install Dependencies
+          - yarn test:ci # <- Test in Non-CI Mode
+  branches:
+  	# run branches here
+```
+
+---
+
+What if we want to have testing on certain branches, such as `develop`.
+
+
+```yaml
+# .... (reduced for verbosity)
+  branches:
+  	- step:
+          name: Run Unit Tests # <- We can name steps
+          caches:
+            - node
+          script:
+            - yarn # <- Install Dependencies
+            - yarn test:ci # <- Test in Non-CI Mode
+```
+
+---
+
+<center>
+  <h1>An example of a pipeline (incl. deployments)</h1>
+  <img src="https://i.imgur.com/238y8To.png" />
+</center>
+
+---
+
+# Now, we can automate deployments.
+
+<img src="http://electric-cloud.com/wp-content/uploads/2014/09/deliver-continuously1.png" />
+
+---
+
+# Automating Deployments to Google App Engine
+
+---
+
+# We can write our script for delivery.
+1. Create Service Account with Details, Create Private Key and Download as JSON
+2. Encode JSON under base64 and upload as an environment variable in repo settings
+3. Pipeline deployment script will need to install Google Cloud SDK first
+4. (Build site - ReactJS) and deploy using `google app deploy`
+
+---
+
+# Automated vs Manual (One-click) Deployments
+
+---
+
+# Advanced Pipelines
+
+---
+
+# Designing a good pipeline
+
+---
+
+# Playing with other Pipelines Settings (such as scheduled)
+
+---
+
+# 
