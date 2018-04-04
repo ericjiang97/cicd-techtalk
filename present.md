@@ -207,17 +207,48 @@ What if we want to have testing on certain branches, such as `develop`.
 
 # Automated vs Manual (One-click) Deployments
 
+You can also set up automatic vs manual deployments/steps
+
+```
+# run tests and deploy to PROD
+deploy:
+      - step:
+          caches:
+            - node
+          script: 
+            - yarn
+            - yarn test:ci
+      - step:
+          name: Deploy to Prod
+          deployment: staging
+          # you can also switch trigger to 'automatic'
+          trigger: manual 
+          caches:
+            - node
+          script:
+            # Install Google App Engine SDK
+            # deploy scripts below
+```
+
 ---
 
 # Advanced Pipelines
+
+![img](https://i.pinimg.com/originals/e6/39/61/e639615d047de280f9a3f3116edb65f9.gif)
 
 ---
 
 # Designing a good pipeline
 
+
+
 ---
 
-# Playing with other Pipelines Settings (such as scheduled)
+# Playing with other Pipelines Settings (such as scheduling)
+
+- Pipelines can also be scheduled
+- To do this, go to Pipelines, then click schedules and add a new one
+- monPlan is configured to run tests at Close of Business (COB, 5pm) every day on **master** and **develop** branches
 
 ---
 
