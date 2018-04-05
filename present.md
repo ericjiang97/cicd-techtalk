@@ -1,7 +1,7 @@
 <!-- $theme: default -->
 
 <center>
-<h1>Automating Deployments with CI & CD Using BitBucket Pipelines</h1>
+<h1>Automating Development with Git Workflows and CI/CD</h1>
 
 <h3>Maintained by</h3>
 
@@ -9,7 +9,7 @@
       style="width: 10%; border-radius: 100%"/>
 ### Eric Jiang
 
-###### _This presentation's code/slides can be found on [https://github.com/lorderikir/cicd-techtalk](https://github.com/lorderikir/cicd-techtalk)_
+###### _This presentation's code & slides can be found on [https://github.com/lorderikir/cicd-techtalk](https://github.com/lorderikir/cicd-techtalk)_
 
 <div>
   	<img class="custom-footer-1" src="https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png" style="bottom: 0; height: 35px; margin-right: 100px" />
@@ -57,6 +57,11 @@
 
 ---
 
+# Gitflow
+- At monPlan we use a method called Gitflow - https://datasift.github.io/gitflow/IntroducingGitFlow.html
+
+---
+
 # monPlan Git Workflow
 <center>
   <img src="https://i.imgur.com/c5L8RFE.png" width="10000%"/>
@@ -80,12 +85,20 @@
 
 ## Setting Branch Permissions
 
-Branch permissions by people who have _administrator_ privellages inside a repo.
+Branch permissions are created by people who have _administrator_ privellages inside a repo.
 
 To set this, Go to Settings and under workflow select Branch Permissions.
 
 <center>
   <img src="https://cdn-images-1.medium.com/max/800/1*PayEoXsUD1eJ0b3xRbZdfg.png" style="width: 75%"/>
+</center>
+
+---
+
+<center>
+<h2>The reason why we do this, is so that this can't happen</h2>
+<img src="
+https://i.imgflip.com/27rmfp.jpg" />
 </center>
 
 ---
@@ -232,16 +245,16 @@ deploy:
 
 ---
 
-# Advanced Pipelines
+# When should you do type of deployments
 
-![img](https://i.pinimg.com/originals/e6/39/61/e639615d047de280f9a3f3116edb65f9.gif)
 
 ---
 
-# Designing a good pipeline
+# Designing a good pipeline with Workflows
 
-
-
+- Designing a good pipeline is really important as it allows integrated workflow within branches
+- Using something like Gitflow, instead of running CI during each Pull Request, every PR triggers a build
+- Then when a PR is created, the PR cannot be pulled in unless the previous tests have passed. (Really Handy!)
 ---
 
 # Playing with other Pipelines Settings (such as scheduling)
@@ -249,7 +262,6 @@ deploy:
 - Pipelines can also be scheduled
 - To do this, go to Pipelines, then click schedules and add a new one
 - monPlan is configured to run tests at Close of Business (COB, 5pm) every day on **master** and **develop** branches
+- Automated deployments to **QAT** (Early Preview - eap) _every Wednesday at 2pm_
 
 ---
-
-# 
